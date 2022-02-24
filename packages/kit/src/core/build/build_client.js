@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { deep_merge } from '../../utils/object.js';
-import { print_config_conflicts } from '../config/index.js';
+import { print_config_conflicts } from '../config/index';
 import { create_app } from '../create_app/index.js';
 import { copy_assets, get_aliases } from '../utils.js';
 import { create_build, find_deps } from './utils.js';

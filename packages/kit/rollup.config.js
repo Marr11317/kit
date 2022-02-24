@@ -3,6 +3,7 @@ import fs from 'fs';
 import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import pkg from './package.json';
+import rollupTypescript from '@rollup/plugin-typescript';
 
 (fs.rmSync || fs.rmdirSync)('assets', { recursive: true, force: true });
 
@@ -35,7 +36,8 @@ export default [
 		plugins: [
 			resolve({
 				extensions: ['.mjs', '.js', '.ts']
-			})
+			}),
+			rollupTypescript()
 		]
 	},
 
@@ -48,7 +50,8 @@ export default [
 		plugins: [
 			resolve({
 				extensions: ['.mjs', '.js', '.ts']
-			})
+			}),
+			rollupTypescript()
 		]
 	},
 
@@ -78,7 +81,8 @@ export default [
 			resolve({
 				extensions: ['.mjs', '.js', '.ts']
 			}),
-			commonjs()
+			commonjs(),
+			rollupTypescript()
 		],
 		preserveEntrySignatures: true
 	}

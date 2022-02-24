@@ -2,7 +2,7 @@ import sade from 'sade';
 import colors from 'kleur';
 import { relative } from 'path';
 import * as ports from 'port-authority';
-import { load_config } from './core/config/index.js';
+import { load_config } from './core/config/index';
 import { networkInterfaces, release } from 'os';
 import { coalesce_to_error } from './utils/error.js';
 

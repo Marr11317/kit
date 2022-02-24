@@ -2,7 +2,7 @@ import fs from 'fs';
 import vite from 'vite';
 import { s } from '../../utils/misc.js';
 import { deep_merge } from '../../utils/object.js';
-import { print_config_conflicts } from '../config/index.js';
+import { print_config_conflicts } from '../config/index';
 import { SVELTE_KIT } from '../constants.js';
 
 /**

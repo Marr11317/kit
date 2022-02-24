@@ -10,7 +10,7 @@ import { getRequest, setResponse } from '../../node.js';
 import { SVELTE_KIT, SVELTE_KIT_ASSETS } from '../constants.js';
 import { get_mime_lookup, resolve_entry, runtime } from '../utils.js';
 import { coalesce_to_error } from '../../utils/error.js';
-import { load_template } from '../config/index.js';
+import { load_template } from '../config/index';
 import { sequence } from '../../hooks.js';
 
 /**

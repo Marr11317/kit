@@ -3,7 +3,7 @@ import path from 'path';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { mkdirp, posixify } from '../../utils/filesystem.js';
 import { deep_merge } from '../../utils/object.js';
-import { load_template, print_config_conflicts } from '../config/index.js';
+import { load_template, print_config_conflicts } from '../config/index';
 import { get_aliases, resolve_entry, runtime } from '../utils.js';
 import { create_build, find_deps } from './utils.js';
 import { SVELTE_KIT } from '../constants.js';

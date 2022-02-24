@@ -3,12 +3,9 @@ import path from 'path';
 import { logger } from '../utils.js';
 import options from './options.js';
 import { loadConfig } from 'unconfig';
+import type { ValidatedConfig, Config } from 'types';
 
-/**
- * @param {string} cwd
- * @param {import('types').ValidatedConfig} config
- */
-export function load_template(cwd, config) {
+export function load_template(cwd: string, config: ValidatedConfig) {
 	const { template } = config.kit.files;
 	const relative = path.relative(cwd, template);
 
@@ -29,9 +26,9 @@ export function load_template(cwd, config) {
 
 export async function load_config({ cwd = process.cwd() } = {}) {
 	// load from `svelte.config.xx` where xx is one of ts, mjs, js, json
-	const { config, sources } = await loadConfig({
-		sources: [ { files: 'svelte.config' } ]
-	  });
+	const { config, sources } = await loadConfig<Config>({
+		sources: [{ files: 'svelte.config' }]
+	});
 
 	if (!sources.length) {
 		throw new Error(
@@ -51,11 +48,7 @@ export async function load_config({ cwd = process.cwd() } = {}) {
 	return validated;
 }
 
-/**
- * @param {import('types').Config} config
- * @returns {import('types').ValidatedConfig}
- */
-export function validate_config(config) {
+export function validate_config(config: Config): ValidatedConfig {
 	if (typeof config !== 'object') {
 		throw new Error(
 			'svelte.config.js must have a configuration object as its default export. See https://kit.svelte.dev/docs/configuration'
@@ -65,12 +58,7 @@ export function validate_config(config) {
 	return options(config, 'config');
 }
 
-/**
- * @param {string[]} conflicts - array of conflicts in dotted notation
- * @param {string=} pathPrefix - prepended in front of the path
- * @param {string=} scope - used to prefix the whole error message
- */
-export function print_config_conflicts(conflicts, pathPrefix = '', scope) {
+export function print_config_conflicts(conflicts: string[], pathPrefix = '', scope?: string) {
 	const prefix = scope ? scope + ': ' : '';
 	const log = logger({ verbose: false });
 	conflicts.forEach((conflict) => {

@@ -1,11 +1,13 @@
 import { join } from 'path';
+import type { Adapter } from 'types';
+import type { Validator } from './types';
+import type { UserConfigExport } from 'vite';
 
-/** @typedef {import('./types').Validator} Validator */
+type AnyFunction = (...props: any) => any;
 
-/** @type {Validator} */
-const options = object(
+const options: Validator = object(
 	{
-		extensions: validate(['.svelte'], (input, keypath) => {
+		extensions: validate(['.svelte'], (input: string[], keypath: string) => {
 			if (!Array.isArray(input) || !input.every((page) => typeof page === 'string')) {
 				throw new Error(`${keypath} must be an array of strings`);
 			}
@@ -24,7 +26,7 @@ const options = object(
 		}),
 
 		kit: object({
-			adapter: validate(null, (input, keypath) => {
+			adapter: validate(null, (input: Partial<Adapter>, keypath: string) => {
 				if (typeof input !== 'object' || !input.adapt) {
 					let message = `${keypath} should be an object with an "adapt" method`;
 
@@ -41,7 +43,7 @@ const options = object(
 
 			amp: boolean(false),
 
-			appDir: validate('_app', (input, keypath) => {
+			appDir: validate('_app', (input: string, keypath: string) => {
 				assert_string(input, keypath);
 
 				if (input) {
@@ -112,24 +114,26 @@ const options = object(
 
 			// TODO: remove this for the 1.0 release
 			headers: error(
-				(keypath) =>
+				(keypath: string) =>
 					`${keypath} has been removed. See https://github.com/sveltejs/kit/pull/3384 for details`
 			),
 
 			// TODO: remove this for the 1.0 release
 			host: error(
-				(keypath) =>
+				(keypath: string) =>
 					`${keypath} has been removed. See https://github.com/sveltejs/kit/pull/3384 for details`
 			),
 
 			// TODO remove for 1.0
-			hydrate: error((keypath) => `${keypath} has been moved to config.kit.browser.hydrate`),
+			hydrate: error(
+				(keypath: string) => `${keypath} has been moved to config.kit.browser.hydrate`
+			),
 
 			inlineStyleThreshold: number(0),
 
 			methodOverride: object({
 				parameter: string('_method'),
-				allowed: validate([], (input, keypath) => {
+				allowed: validate([], (input: string[], keypath: string) => {
 					if (!Array.isArray(input) || !input.every((method) => typeof method === 'string')) {
 						throw new Error(`${keypath} must be an array of strings`);
 					}
@@ -145,13 +149,13 @@ const options = object(
 			package: object({
 				dir: string('package'),
 				// excludes all .d.ts and filename starting with _
-				exports: fun((filepath) => !/^_|\/_|\.d\.ts$/.test(filepath)),
+				exports: fun((filepath: string) => !/^_|\/_|\.d\.ts$/.test(filepath)),
 				files: fun(() => true),
 				emitTypes: boolean(true)
 			}),
 
 			paths: object({
-				base: validate('', (input, keypath) => {
+				base: validate('', (input: string, keypath: string) => {
 					assert_string(input, keypath);
 
 					if (input !== '' && (input.endsWith('/') || !input.startsWith('/'))) {
@@ -162,7 +166,7 @@ const options = object(
 
 					return input;
 				}),
-				assets: validate('', (input, keypath) => {
+				assets: validate('', (input: string, keypath: string) => {
 					assert_string(input, keypath);
 
 					if (input) {
@@ -187,11 +191,11 @@ const options = object(
 				concurrency: number(1),
 				crawl: boolean(true),
 				createIndexFiles: error(
-					(keypath) =>
+					(keypath: string) =>
 						`${keypath} has been removed — it is now controlled by the trailingSlash option. See https://kit.svelte.dev/docs/configuration#trailingslash`
 				),
 				enabled: boolean(true),
-				entries: validate(['*'], (input, keypath) => {
+				entries: validate(['*'], (input: string[], keypath: string) => {
 					if (!Array.isArray(input) || !input.every((page) => typeof page === 'string')) {
 						throw new Error(`${keypath} must be an array of strings`);
 					}
@@ -208,7 +212,7 @@ const options = object(
 				}),
 
 				// TODO: remove this for the 1.0 release
-				force: validate(undefined, (input, keypath) => {
+				force: validate(undefined, (input: any, keypath: string) => {
 					if (typeof input !== undefined) {
 						const newSetting = input ? 'continue' : 'fail';
 						const needsSetting = newSetting === 'continue';
@@ -220,7 +224,7 @@ const options = object(
 					}
 				}),
 
-				onError: validate('fail', (input, keypath) => {
+				onError: validate('fail', (input: AnyFunction | 'continue' | 'fail', keypath: string) => {
 					if (typeof input === 'function') return input;
 					if (['continue', 'fail'].includes(input)) return input;
 					throw new Error(
@@ -229,33 +233,35 @@ const options = object(
 				}),
 
 				// TODO: remove this for the 1.0 release
-				pages: error((keypath) => `${keypath} has been renamed to \`entries\`.`)
+				pages: error((keypath: string) => `${keypath} has been renamed to \`entries\`.`)
 			}),
 
 			// TODO: remove this for the 1.0 release
 			protocol: error(
-				(keypath) =>
+				(keypath: string) =>
 					`${keypath} has been removed. See https://github.com/sveltejs/kit/pull/3384 for details`
 			),
 
 			// TODO remove for 1.0
-			router: error((keypath) => `${keypath} has been moved to config.kit.browser.router`),
+			router: error((keypath: string) => `${keypath} has been moved to config.kit.browser.router`),
 
-			routes: fun((filepath) => !/(?:(?:^_|\/_)|(?:^\.|\/\.)(?!well-known))/.test(filepath)),
+			routes: fun(
+				(filepath: string) => !/(?:(?:^_|\/_)|(?:^\.|\/\.)(?!well-known))/.test(filepath)
+			),
 
 			serviceWorker: object({
 				register: boolean(true),
-				files: fun((filename) => !/\.DS_Store/.test(filename))
+				files: fun((filename: string) => !/\.DS_Store/.test(filename))
 			}),
 
 			// TODO remove this for 1.0
 			ssr: error(
-				(keypath) =>
+				(keypath: string) =>
 					`${keypath} has been removed — use the handle hook instead: https://kit.svelte.dev/docs/hooks#handle'`
 			),
 
 			// TODO remove this for 1.0
-			target: error((keypath) => `${keypath} is no longer required, and should be removed`),
+			target: error((keypath: string) => `${keypath} is no longer required, and should be removed`),
 
 			trailingSlash: list(['never', 'always', 'ignore']),
 
@@ -266,7 +272,7 @@ const options = object(
 
 			vite: validate(
 				() => ({}),
-				(input, keypath) => {
+				(input: UserConfigExport, keypath: string) => {
 					if (typeof input === 'object') {
 						const config = input;
 						input = () => config;
@@ -286,15 +292,9 @@ const options = object(
 	true
 );
 
-/**
- * @param {Record<string, Validator>} children
- * @param {boolean} [allow_unknown]
- * @returns {Validator}
- */
-function object(children, allow_unknown = false) {
+function object(children: Record<string, Validator>, allow_unknown = false): Validator {
 	return (input, keypath) => {
-		/** @type {Record<string, any>} */
-		const output = {};
+		const output: Record<string, any> = {};
 
 		if ((input && typeof input !== 'object') || Array.isArray(input)) {
 			throw new Error(`${keypath} should be an object`);
@@ -326,23 +326,13 @@ function object(children, allow_unknown = false) {
 	};
 }
 
-/**
- * @param {any} fallback
- * @param {(value: any, keypath: string) => any} fn
- * @returns {Validator}
- */
-function validate(fallback, fn) {
+function validate(fallback: any, fn: (value: any, keypath: string) => any): Validator {
 	return (input, keypath) => {
 		return input === undefined ? fallback : fn(input, keypath);
 	};
 }
 
-/**
- * @param {string | null} fallback
- * @param {boolean} allow_empty
- * @returns {Validator}
- */
-function string(fallback, allow_empty = true) {
+function string(fallback: string | null, allow_empty = true): Validator {
 	return validate(fallback, (input, keypath) => {
 		assert_string(input, keypath);
 
@@ -354,11 +344,7 @@ function string(fallback, allow_empty = true) {
 	});
 }
 
-/**
- * @param {string[] | undefined} [fallback]
- * @returns {Validator}
- */
-function string_array(fallback) {
+function string_array(fallback?: string[]): Validator {
 	return validate(fallback, (input, keypath) => {
 		if (input === undefined) return input;
 
@@ -370,11 +356,7 @@ function string_array(fallback) {
 	});
 }
 
-/**
- * @param {number} fallback
- * @returns {Validator}
- */
-function number(fallback) {
+function number(fallback: number): Validator {
 	return validate(fallback, (input, keypath) => {
 		if (typeof input !== 'number') {
 			throw new Error(`${keypath} should be a number, if specified`);
@@ -383,11 +365,7 @@ function number(fallback) {
 	});
 }
 
-/**
- * @param {boolean} fallback
- * @returns {Validator}
- */
-function boolean(fallback) {
+function boolean(fallback: boolean): Validator {
 	return validate(fallback, (input, keypath) => {
 		if (typeof input !== 'boolean') {
 			throw new Error(`${keypath} should be true or false, if specified`);
@@ -396,11 +374,7 @@ function boolean(fallback) {
 	});
 }
 
-/**
- * @param {string[]} options
- * @returns {Validator}
- */
-function list(options, fallback = options[0]) {
+function list(options: string[], fallback = options[0]): Validator {
 	return validate(fallback, (input, keypath) => {
 		if (!options.includes(input)) {
 			// prettier-ignore
@@ -414,11 +388,7 @@ function list(options, fallback = options[0]) {
 	});
 }
 
-/**
- * @param {(filename: string) => boolean} fallback
- * @returns {Validator}
- */
-function fun(fallback) {
+function fun(fallback: (filename: string) => boolean): Validator {
 	return validate(fallback, (input, keypath) => {
 		if (typeof input !== 'function') {
 			throw new Error(`${keypath} should be a function, if specified`);
@@ -427,18 +397,13 @@ function fun(fallback) {
 	});
 }
 
-/**
- * @param {string} input
- * @param {string} keypath
- */
-function assert_string(input, keypath) {
+function assert_string(input: string, keypath: string) {
 	if (typeof input !== 'string') {
 		throw new Error(`${keypath} should be a string, if specified`);
 	}
 }
 
-/** @param {(keypath?: string) => string} fn */
-function error(fn) {
+function error(fn: (keypath: string) => string): Validator {
 	return validate(undefined, (input, keypath) => {
 		if (input !== undefined) {
 			throw new Error(fn(keypath));

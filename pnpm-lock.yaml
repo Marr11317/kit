@@ -226,6 +226,7 @@ importers:
     specifiers:
       '@playwright/test': ^1.17.1
       '@rollup/plugin-replace': ^4.0.0
+      '@rollup/plugin-typescript': ^8.3.1
       '@sveltejs/vite-plugin-svelte': ^1.0.0-next.32
       '@types/amphtml-validator': ^1.0.1
       '@types/cookie': ^0.4.1
@@ -263,6 +264,7 @@ importers:
     devDependencies:
       '@playwright/test': 1.17.1
       '@rollup/plugin-replace': 4.0.0_rollup@2.60.2
+      '@rollup/plugin-typescript': 8.3.1_rollup@2.60.2+typescript@4.5.5
       '@types/amphtml-validator': 1.0.1
       '@types/cookie': 0.4.1
       '@types/marked': 4.0.1
@@ -1416,6 +1418,20 @@ packages:
       '@rollup/pluginutils': 3.1.0_rollup@2.60.2
       magic-string: 0.25.7
       rollup: 2.60.2
+    dev: true
+
+  /@rollup/plugin-typescript/8.3.1_rollup@2.60.2+typescript@4.5.5:
+    resolution: {integrity: sha512-84rExe3ICUBXzqNX48WZV2Jp3OddjTMX97O2Py6D1KJaGSwWp0mDHXj+bCGNJqWHIEKDIT2U0sDjhP4czKi6cA==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.7.0'
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.60.2
+      resolve: 1.22.0
+      rollup: 2.60.2
+      typescript: 4.5.5
     dev: true
 
   /@rollup/pluginutils/3.1.0_rollup@2.60.2:

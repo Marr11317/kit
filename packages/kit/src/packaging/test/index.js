@@ -7,7 +7,7 @@ import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
 import { make_package } from '../index.js';
-import { load_config } from '../../core/config/index.js';
+import { load_config } from '../../core/config/index';
 import { rimraf, walk } from '../../utils/filesystem.js';
 
 const __filename = fileURLToPath(import.meta.url);
