@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import * as url from 'url';
 import { logger } from '../utils.js';
 import options from './options.js';
+import { loadConfig } from 'unconfig';
 
 /**
  * @param {string} cwd
@@ -28,17 +28,18 @@ export function load_template(cwd, config) {
 }
 
 export async function load_config({ cwd = process.cwd() } = {}) {
-	const config_file = path.join(cwd, 'svelte.config.js');
+	// load from `svelte.config.xx` where xx is one of ts, mjs, js, json
+	const { config, sources } = await loadConfig({
+		sources: [ { files: 'svelte.config' } ]
+	  });
 
-	if (!fs.existsSync(config_file)) {
+	if (!sources.length) {
 		throw new Error(
 			'You need to create a svelte.config.js file. See https://kit.svelte.dev/docs/configuration'
 		);
 	}
 
-	const config = await import(url.pathToFileURL(config_file).href);
-
-	const validated = validate_config(config.default);
+	const validated = validate_config(config);
 
 	validated.kit.files.assets = path.resolve(cwd, validated.kit.files.assets);
 	validated.kit.files.hooks = path.resolve(cwd, validated.kit.files.hooks);
